@@ -13,7 +13,7 @@ interface AuthOptions {
   allowedGroup?: string[];
 }
 
-interface AuthenticatedRequest extends NextRequest {
+export interface AuthenticatedRequest extends NextRequest {
   userId?: string;
   token?: string;
   userRole?: string;

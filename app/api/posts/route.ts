@@ -6,48 +6,12 @@ import { HTTP_STATUS } from "@/lib/utils";
 import { auth, AuthenticatedRequest } from "@/lib/auth";
 import { USER_ROLES } from "@/lib/utils";
 import { NextRequest } from "next/server";
-
-interface Post {
-  _id: string;
-  company: string;
-  title: string;
-  description: string;
-  thumbnailUrl: string;
-  createdAt: Date;
-  link: string;
-  authorId: string;
-}
-
-interface CompanyWithPosts {
-  id: string;
-  name: string;
-  posts: Post[];
-}
+import { companiesWithPosts } from "@/lib/companiesWithPostsService";
 
 export async function GET(request: Request) {
-  await connectDB();
   try {
-    const posts = await getAllPosts();
-    
-    const companiesMap = new Map<string, Post[]>();
-    
-    posts.forEach((post: Post) => {
-      const companyName = post.company;
-      if (!companiesMap.has(companyName)) {
-        companiesMap.set(companyName, []);
-      }
-      companiesMap.get(companyName)!.push(post);
-    });
-    
-    const companiesWithPosts: CompanyWithPosts[] = Array.from(companiesMap.entries()).map(
-      ([companyName, companyPosts]) => ({
-        id: companyName.toLowerCase().replace(/\s+/g, '-'),
-        name: companyName,
-        posts: companyPosts
-      })
-    );
-    
-    return new Response(JSON.stringify(companiesWithPosts), {
+    const companies = await companiesWithPosts();
+    return new Response(JSON.stringify(companies), {
       headers: {
         'Content-Type': 'application/json',
       },

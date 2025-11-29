@@ -18,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { apiPost } from "@/lib/api/instance";
-import { error } from "console";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Usuário é obrigatório"),
@@ -47,7 +46,7 @@ export default function AdminLoginPage() {
       });
 
       if (response?.accessToken) {
-        localStorage.setItem("token", response.accessToken);
+        document.cookie = `token=${response.accessToken}; path=/; max-age=86400`; // 24 hours
         window.location.href = "/admin";
       }
     } catch (err: any) {

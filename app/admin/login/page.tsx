@@ -17,6 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { apiPost } from "@/lib/api/instance";
+import { error } from "console";
+
 const loginSchema = z.object({
   username: z.string().min(1, "Usuário é obrigatório"),
   password: z.string().min(1, "Senha é obrigatória"),
@@ -38,8 +41,17 @@ export default function AdminLoginPage() {
   const onSubmit = async (values: LoginFormValues) => {
     setIsSubmitting(true);
     try {
-      // TODO: replace with real auth action or API call
-      console.log("login attempt", values);
+      const response = await apiPost("/login", {
+        username: values.username,
+        password: values.password,
+      });
+
+      if (response?.accessToken) {
+        localStorage.setItem("token", response.accessToken);
+        window.location.href = "/admin";
+      }
+    } catch (err: any) {
+      alert(err.message || "Erro ao fazer login. Tente novamente.");
     } finally {
       setIsSubmitting(false);
     }

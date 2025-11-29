@@ -1,4 +1,5 @@
 import { CompanyWithCases } from "@/lib/types/content";
+import { apiGet } from "./instance";
 
 const mockedCompanies: CompanyWithCases[] = [
   {
@@ -97,38 +98,30 @@ function sortByOrder<T extends { order: number }>(items: T[]): T[] {
  * Fetches companies and their cases for the public website.
  * Swap this mock with a real API call when backend routes are ready.
  */
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
 export async function fetchCompaniesWithCases(): Promise<CompanyWithCases[]> {
   try {
-    const response = await fetch(`${baseUrl}/posts`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const companiesWithPosts = await response.json();
+    const companiesWithPosts = await apiGet('/posts');
     
     const companiesWithCases: CompanyWithCases[] = companiesWithPosts.map((company: any, index: number) => ({
-        id: company.id,
-        name: company.name,
-        order: index + 1,
-        cases: company.posts.map((post: any, postIndex: number) => ({
-          id: post._id,
-          companyId: company.id,
-          title: post.title,
-          description: post.description,
-          thumbnailUrl: post.thumbnailUrl,
-          link: post.link,
-          order: postIndex + 1,
-        }))
-      }
-    ));
-
+      id: company.id,
+      name: company.name,
+      order: index + 1,
+      cases: company.posts.map((post: any, postIndex: number) => ({
+        id: post._id,
+        companyId: company.id,
+        title: post.title,
+        description: post.description,
+        thumbnailUrl: post.thumbnailUrl,
+        link: post.link,
+        order: postIndex + 1,
+      }))
+    }));
+    
     return sortByOrder(companiesWithCases).map((company) => ({
       ...company,
       cases: sortByOrder(company.cases),
     }));
-    
   } catch (error) {
     console.error('Error fetching companies with cases:', error);
     // Fallback to mock data in case of error

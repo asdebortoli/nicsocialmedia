@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 import { apiPost } from "@/lib/api/instance";
+import { Background } from "@/app/(public)/components/background";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Usuário é obrigatório"),
@@ -58,22 +58,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-[#f6f1e9] px-6">
-      <Image
-        src="/left-bg.svg"
-        alt=""
-        width={387}
-        height={222}
-        className="pointer-events-none absolute -left-50 md:left-0 top-96 z-0"
-        aria-hidden="true"
-      />
-      <Image
-        src="/right-bg.svg"
-        alt=""
-        width={600}
-        height={234}
-        className="pointer-events-none absolute -right-50 md:right-0 top-50 z-0"
-        aria-hidden="true"
-      />
+      <Background />
       <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-8">
         <h1 className="text-4xl font-semibold text-[#7a8674]">Login</h1>
         <Form {...form}>

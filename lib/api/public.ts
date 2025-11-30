@@ -1,4 +1,5 @@
 import { CompanyWithCases } from "@/lib/types/content";
+import { apiGet } from "./instance";
 
 const mockedCompanies: CompanyWithCases[] = [
   {
@@ -89,17 +90,37 @@ const mockedCompanies: CompanyWithCases[] = [
   },
 ];
 
-function sortByOrder<T extends { order: number }>(items: T[]): T[] {
-  return [...items].sort((a, b) => a.order - b.order);
+export function convertPostsToCases(posts: any[]): CompanyWithCases[] {
+    const companiesWithCases: CompanyWithCases[] = posts.map((company: any, index: number) => ({
+      id: company.id,
+      name: company.name,
+      order: company.order,
+      cases: company.cases.map((post: any) => ({
+        id: post._id,
+        companyId: company.id,
+        title: post.title,
+        description: post.description,
+        thumbnailUrl: post.thumbnailUrl,
+        link: post.link,
+        order: post.order,
+      }))
+    }));
+
+    return companiesWithCases;
 }
 
 /**
  * Fetches companies and their cases for the public website.
  * Swap this mock with a real API call when backend routes are ready.
  */
+
 export async function fetchCompaniesWithCases(): Promise<CompanyWithCases[]> {
-  return sortByOrder(mockedCompanies).map((company) => ({
-    ...company,
-    cases: sortByOrder(company.cases),
-  }));
+  try {
+    const companiesWithPosts = await apiGet('/posts');
+    return convertPostsToCases(companiesWithPosts);
+  } catch (error) {
+    console.error('Error fetching companies with cases:', error);
+    // Fallback to mock data in case of error
+    return mockedCompanies;
+  }
 }

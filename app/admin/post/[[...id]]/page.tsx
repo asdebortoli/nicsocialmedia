@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Cookie from "js-cookie";
 import * as z from "zod";
-import { useParams } from "next/navigation";
+import { redirect, useParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -58,9 +58,7 @@ export default function AdminPostPage() {
 
   const token = Cookie.get("token");
   if (!token) {
-    if (typeof window !== "undefined") {
-      window.location.href = "/admin/login";
-    }
+    redirect('/admin/login');
   }
 
   const [isSubmitting, setIsSubmitting] = useState(false);

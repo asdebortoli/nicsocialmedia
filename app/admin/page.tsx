@@ -28,7 +28,7 @@ export default async function AdminPage() {
 
         <main className="relative z-10 flex min-h-screen w-full max-w-7xl flex-col items-center gap-16 px-6 py-24 sm:items-start md:px-12 lg:px-16 lg:py-32">
           <Hero />
-          <CompaniesSectionAdmin companies={convertPostsToCases(companies)} />
+          <CompaniesSectionAdmin companies={convertPostsToCases(companies)} token={token.value} />
         </main>
       </div>
     </div>

@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid credentials' }, 
-        { status: HTTP_STATUS.UNAUTHORIZED }
+        { status: HTTP_STATUS.FORBIDDEN }
       );
     }
 

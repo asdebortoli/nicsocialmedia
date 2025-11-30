@@ -82,3 +82,19 @@ export const apiPutForm = async (url: string, data : FormData, auth? : string ) 
     throwRequestError(error, url);
   }
 };
+
+export const apiDelete = async (url: string, auth? : string ) => {
+  try {
+    const response = await axios.delete(
+      `${apiInstance.defaults.baseURL}${url}`,
+      {
+        headers: {
+          ...(auth ? { 'Authorization': `Bearer ${auth}` } : {}),
+        }
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throwRequestError(error, url);
+  }
+}

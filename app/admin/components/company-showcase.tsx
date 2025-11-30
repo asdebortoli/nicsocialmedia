@@ -1,5 +1,5 @@
 import { CompanyWithCases } from "@/lib/types/content";
-import { ExternalLink, Pencil, Trash } from "lucide-react";
+import { ExternalLink, Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,15 +13,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
+import DeleteButton from "./delete-button";
+
 type CompaniesSectionProps = {
   companies: CompanyWithCases[];
+  token: string;
 };
 
 type CompanyCarouselProps = {
   company: CompanyWithCases;
+  token: string;
 };
 
-export function CompaniesSectionAdmin({ companies }: CompaniesSectionProps) {
+export function CompaniesSectionAdmin({ companies, token }: CompaniesSectionProps) {
   return (
     <div className="flex w-full flex-col gap-16">
       {companies.map((company) => (
@@ -39,14 +43,14 @@ export function CompaniesSectionAdmin({ companies }: CompaniesSectionProps) {
               </p>
             ) : null}
           </div>
-          <CompanyCarouselAdmin company={company} />
+          <CompanyCarouselAdmin company={company} token={token}/>
         </section>
       ))}
     </div>
   );
 }
 
-function CompanyCarouselAdmin({ company }: CompanyCarouselProps) {
+function CompanyCarouselAdmin({ company, token }: CompanyCarouselProps) {
   return (
     <Carousel className="w-full">
       <CarouselContent>
@@ -105,19 +109,7 @@ function CompanyCarouselAdmin({ company }: CompanyCarouselProps) {
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <Button
-                        asChild
-                        size="icon"
-                        variant="destructive"
-                        aria-label="Deletar case"
-                      >
-                        <Link
-                          href={`/admin/post/${caseStudy.id}`}
-                          rel="noreferrer noopener"
-                        >
-                          <Trash className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <DeleteButton id={String(caseStudy.id)} token={token} />
                     </div>
                   </div>
                 </CardFooter>

@@ -3,8 +3,7 @@ import connectDB from "@/lib/db/mongodb";
 import { getPostById, deletePostById } from "@/models/post";
 import { auth, AuthenticatedRequest} from "@/lib/auth";
 import { USER_ROLES, HTTP_STATUS } from "@/lib/utils";
-import path from "path";
-import { writeFile, unlink } from "fs/promises";
+import { uploadImage, deleteImage } from "@/lib/blob";
 
 export async function GET(request: NextRequest) {
     try {
@@ -77,19 +76,18 @@ export async function PUT(request: NextRequest) {
             if (type !== "image/jpeg" && type !== "image/png" && type !== "image/jpeg" && type !== "image/webp") {
                 return Response.json({ error: "Unsupported image format. Please upload JPEG, PNG, or WEBP." }, { status: HTTP_STATUS.BAD_REQUEST });
             }
+            
+            // Delete old image from blob storage if it exists
+            if (post.thumbnailUrl && post.thumbnailUrl.startsWith('http')) {
+                await deleteImage(post.thumbnailUrl);
+            }
+            
             const buffer = Buffer.from(await img.arrayBuffer());
-            const filename = `${post._id}.${img.type.split("/")[1]}`;
+            const filename = `posts/${post._id}.${img.type.split("/")[1]}`;
 
-            console.log('Deleting old image:', post.thumbnailUrl);
-            console.log('New image filename:', filename);
-
-            await unlink(path.join(process.cwd(), "public" + post.thumbnailUrl));
-            await writeFile(
-                path.join(process.cwd(), "public/uploads/" + filename),
-                buffer
-            );
-
-            post.thumbnailUrl = `/uploads/${filename}`;
+            // Upload new image to Vercel Blob Storage
+            const imageUrl = await uploadImage(buffer, filename, img.type);
+            post.thumbnailUrl = imageUrl;
         }
         const { title, description, company, link } = Object.fromEntries(formData.entries()) as {
             title: string;
@@ -149,7 +147,11 @@ export async function DELETE(request: NextRequest) {
             });
         }
 
-        await unlink(path.join(process.cwd(), "public" + post.thumbnailUrl));
+        // Delete image from blob storage if it exists
+        if (post.thumbnailUrl && post.thumbnailUrl.startsWith('http')) {
+            await deleteImage(post.thumbnailUrl);
+        }
+        
         const deletedPost = await deletePostById(id);
         return new Response(JSON.stringify(deletedPost), {
             headers: {

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { HTTP_STATUS } from '../utils';
 
 const apiInstance = axios.create({
   baseURL: typeof window !== 'undefined' ? '/api' : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api`,
@@ -9,42 +10,75 @@ const apiInstance = axios.create({
   timeout: 5000, // 5 second timeout
 });
 
+const throwRequestError = (error: any, url: string) => {
+  if (error.response) {
+    if (error.response.status === HTTP_STATUS.UNAUTHORIZED) {
+      throw new Error('Usuário não tem permissão para realizar esta operação.');
+    }
+    else if (error.response.status === HTTP_STATUS.FORBIDDEN) {
+      throw new Error('Acesso negado. Favor verificar suas credenciais.');
+    }
+    throw new Error(`${error.response.data.error || error.response.data.message || 'Failed request'}`);
+  } else if (error.request) {
+    throw new Error('No response from server. Please check your connection.');
+  } else {
+    throw new Error(`Failed request to ${url}: ${error.message}`);
+  }
+};
+
 export const apiGet = async (url: string, data? : Object) => {
   console.log('GET Request to:', url, 'with data:', data);
   try {
     const response = await apiInstance.get(url, data);
-    if (response.data.accessToken) {
-      localStorage.setItem('token', response.data.accessToken);
-      window.location.href = '/admin';
-    }
     return response.data;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(`${error.response.data.error || 'Failed'}`);
-    } else if (error.request) {
-      throw new Error('No response from server. Please check your connection.');
-    } else {
-      throw new Error(`Failed request to ${url}: ${error.message}`);
-    }
+    throwRequestError(error, url);
   }
 }
 
-export const apiPost = async (url: string, data? : Object) => {
-  console.log('POST Request to:', url);
+export const apiPost = async (url: string, data? : Object ) => {
   try {
     const response = await apiInstance.post(url, data);
-    if (response.data.accessToken) {
-      localStorage.setItem('token', response.data.accessToken);
-      window.location.href = '/admin';
-    }
     return response.data;
   } catch (error: any) {
-    if (error.response) {
-      throw new Error(`Error: ${error.response.data.error || 'Login failed'}`);
-    } else if (error.request) {
-      throw new Error('No response from server. Please check your connection.');
-    } else {
-      throw new Error(`Error: ${error.message}`);
-    }
+    throwRequestError(error, url);
+  }
+};
+
+export const apiPostForm = async (url: string, data : FormData, auth? : string ) => {
+  try {
+    const response = await axios.post(
+      `${apiInstance.defaults.baseURL}${url}`,
+      data,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(auth ? { 'Authorization': `Bearer ${auth}` } : {}),
+        },
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throwRequestError(error, url);
+  }
+};
+
+export const apiPutForm = async (url: string, data : FormData, auth? : string ) => {
+  try {
+    const response = await axios.put(
+      `${apiInstance.defaults.baseURL}${url}`,
+      data,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(auth ? { 'Authorization': `Bearer ${auth}` } : {}),
+        },
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throwRequestError(error, url);
   }
 };

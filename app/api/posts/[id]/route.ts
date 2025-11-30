@@ -6,6 +6,36 @@ import { USER_ROLES, HTTP_STATUS } from "@/lib/utils";
 import path from "path";
 import { writeFile, unlink } from "fs/promises";
 
+export async function GET(request: NextRequest) {
+    try {
+        await connectDB();
+        const id = request.url.split('/').pop()!;
+
+        const post = await getPostById(id);
+        if (!post) {
+            return new Response(JSON.stringify({ error: 'Post not found' }), { 
+                status: HTTP_STATUS.NOT_FOUND,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+        return new Response(JSON.stringify(post), {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    } catch (error) {
+        console.error('Error fetching post:', error);
+        return new Response(JSON.stringify({ error: 'Failed to fetch post' }), {
+            status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+}
+
 export async function PUT(request: NextRequest) {
     try {
         await connectDB();

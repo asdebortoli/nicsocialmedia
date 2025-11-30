@@ -1,5 +1,5 @@
 import connectDB from "@/lib/db/mongodb";
-import { addPost, getAllPosts, getPostById } from "@/models/post";
+import { addPost } from "@/models/post";
 import path from "path";
 import { writeFile } from "fs/promises";
 import { HTTP_STATUS } from "@/lib/utils";

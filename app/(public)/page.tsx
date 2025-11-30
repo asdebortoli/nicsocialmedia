@@ -1,10 +1,14 @@
 import { CompaniesSection } from "@/app/(public)/components/company-showcase";
 import { Hero } from "@/app/(public)/components/hero";
-import { fetchCompaniesWithCases } from "@/lib/api/public";
+import { companiesWithPosts } from "@/lib/companiesWithPostsService";
+import { convertPostsToCases } from "@/lib/api/public";
+import connectDB from "@/lib/db/mongodb";
 import { Background } from "./components/background";
 
 export default async function HomePage() {
-  const companies = await fetchCompaniesWithCases();
+  await connectDB();
+  const companiesData = await companiesWithPosts();
+  const companies = convertPostsToCases(companiesData);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center font-sans">

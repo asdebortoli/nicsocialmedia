@@ -91,7 +91,8 @@ const mockedCompanies: CompanyWithCases[] = [
 ];
 
 export function convertPostsToCases(posts: any[]): CompanyWithCases[] {
-    const companiesWithCases: CompanyWithCases[] = posts.map((company: any, index: number) => ({
+  const companiesWithCases: CompanyWithCases[] = posts.map(
+    (company: any, index: number) => ({
       id: company.id,
       name: company.name,
       order: company.order,
@@ -100,13 +101,14 @@ export function convertPostsToCases(posts: any[]): CompanyWithCases[] {
         companyId: company.id,
         title: post.title,
         description: post.description,
-        thumbnailUrl: post.thumbnailUrl,
-        link: post.link,
+        thumbnailUrl: post.thumbnailUrl || "https://picsum.photos/150",
+        link: post.link || "https://www.google.com",
         order: post.order,
-      }))
-    }));
+      })),
+    })
+  );
 
-    return companiesWithCases;
+  return companiesWithCases;
 }
 
 /**
@@ -116,10 +118,10 @@ export function convertPostsToCases(posts: any[]): CompanyWithCases[] {
 
 export async function fetchCompaniesWithCases(): Promise<CompanyWithCases[]> {
   try {
-    const companiesWithPosts = await apiGet('/posts');
+    const companiesWithPosts = await apiGet("/posts");
     return convertPostsToCases(companiesWithPosts);
   } catch (error) {
-    console.error('Error fetching companies with cases:', error);
+    console.error("Error fetching companies with cases:", error);
     // Fallback to mock data in case of error
     return mockedCompanies;
   }

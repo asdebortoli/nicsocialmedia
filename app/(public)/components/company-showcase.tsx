@@ -1,3 +1,5 @@
+"use client";
+
 import { CompanyWithCases } from "@/lib/types/content";
 import { ExternalLink } from "lucide-react";
 import Image from "next/image";

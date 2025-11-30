@@ -1,3 +1,4 @@
+"use client";
 import { CompaniesSection } from "@/app/(public)/components/company-showcase";
 import { Hero } from "@/app/(public)/components/hero";
 import { fetchCompaniesWithCases } from "@/lib/api/public";

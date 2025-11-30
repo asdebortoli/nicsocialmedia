@@ -5,6 +5,8 @@ import { convertPostsToCases } from "@/lib/api/public";
 import connectDB from "@/lib/db/mongodb";
 import { Background } from "./components/background";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   await connectDB();
   const companiesData = await companiesWithPosts();

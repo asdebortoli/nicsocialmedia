@@ -43,6 +43,30 @@ mongoose.connection.on("disconnected", () => {
 export async function connectDB() {
   try {
     await connectionPromise;
+    // Ensure connection is fully ready (readyState: 1 = connected)
+    if (mongoose.connection.readyState !== 1) {
+      // If not connected, wait for the connection event
+      await new Promise<void>((resolve, reject) => {
+        if (mongoose.connection.readyState === 1) {
+          resolve();
+          return;
+        }
+
+        const timeout = setTimeout(() => {
+          reject(new Error("MongoDB connection timeout"));
+        }, 10000);
+
+        mongoose.connection.once("connected", () => {
+          clearTimeout(timeout);
+          resolve();
+        });
+
+        mongoose.connection.once("error", (err) => {
+          clearTimeout(timeout);
+          reject(err);
+        });
+      });
+    }
     return mongoose.connection;
   } catch (error) {
     console.error("Erro ao conectar com o banco de dados:", error);

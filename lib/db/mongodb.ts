@@ -50,4 +50,13 @@ export async function connectDB() {
   }
 }
 
+export async function disconnectDB() {
+  try {
+    await mongoose.connection.close();
+  } catch (error) {
+    console.error("Erro ao desconectar do banco de dados:", error);
+    throw error;
+  }
+}
+
 export default connectDB;

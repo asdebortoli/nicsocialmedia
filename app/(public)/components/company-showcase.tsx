@@ -20,6 +20,7 @@ type CompaniesSectionProps = {
 };
 
 export function CompaniesSection({ companies }: CompaniesSectionProps) {
+  console.log("companies", companies);
   return (
     <div className="flex w-full flex-col gap-16">
       {companies.map((company) => (

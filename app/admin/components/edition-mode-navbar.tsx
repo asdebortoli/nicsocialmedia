@@ -1,4 +1,7 @@
-import { Plus, User } from "lucide-react";
+"use client"
+import { deleteCookie } from 'cookies-next';
+
+import { LogOut, Plus, User } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -29,6 +32,22 @@ export function NavbarEditionMode() {
             rel="noreferrer noopener"
           >
             <User className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button
+          asChild
+          size="icon"
+          aria-label="Sair"
+          type="button"
+          onClick={() => {
+            deleteCookie('token');
+          }}
+        >
+          <Link 
+            href="/admin/login" 
+            rel="noreferrer noopener"
+          >
+            <LogOut className="h-4 w-4" />
           </Link>
         </Button>
         </div>

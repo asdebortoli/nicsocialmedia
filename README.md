@@ -8,7 +8,19 @@ Install the dependencies:
 npm install
 ```
 
-If it's the first time starting the app, run the setup:
+If it's the first time starting the app:
+
+1. Create a `.env` file:
+```bash
+MONGODB_URI=mongodb+srv://user:pass@yourCluster.kmpihqs.mongodb.net/dbName?retryWrites=true&w=majority&appName=YourApp
+JWT_SECRET=yourJWTsecret
+NODE_ENV=development
+NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+```
+
+2. Run the setup:
 
 ```bash
 npx tsx setup.ts
